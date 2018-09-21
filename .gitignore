@@ -1,0 +1,7 @@
+.vs
+packages
+TriangleFun.Tests/bin
+TriangleFun.Tests/obj
+TriangleFun/bin
+TriangleFun/obj
+TriangleFun/*.user

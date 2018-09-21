@@ -1,0 +1,144 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title></title>
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript">
+    function ClearCoordinates() {
+      $('.coordinateValue').val('');
+    }
+    function ClearGrid() {
+      $('.gridValue').val('');
+    }
+    function AjaxErrorReport(jqXHR, textStatus, errorThrown) {
+      if (jqXHR.responseJSON) {
+        if (jqXHR.responseJSON.ModelState) {
+          // TODO: more user friendly error reporting
+          alert(JSON.stringify(jqXHR.responseJSON.ModelState));
+        }
+        else {
+          alert('error: ' + textStatus + ' - ' + errorThrown);
+        }
+      }
+      else {
+        alert('error: ' + textStatus + ' - ' + errorThrown);
+      }
+    }
+    function CalculateCoordinates() {
+      ClearCoordinates();
+
+      // TODO: perform client side input validation here (out of time)
+
+      $.ajax({
+        type: 'GET',
+        url: 'api/TriangleCalculator/CartesianCoordinatesFromGrid/' + $('#row').val() + '/' + $('#col').val(),
+        dataType: 'json',
+        success: function (data) {
+          if (!data) {
+            alert('hmmm... no result was returned...');
+          } else {
+            $('#v1x').val(data.V1.X);
+            $('#v1y').val(data.V1.Y);
+            $('#v2x').val(data.V2.X);
+            $('#v2y').val(data.V2.Y);
+            $('#v3x').val(data.V3.X);
+            $('#v3y').val(data.V3.Y);
+          }
+        },
+        error: AjaxErrorReport
+      });
+    }
+    function CalculateGridLocation() {
+      ClearGrid();
+
+      // TODO: perform client side input validation here (out of time)
+
+      // Note to reviewer: This probably should be a GET request in order to comply with REST 
+      //                   principles.The data coming in, with 3 X/Y pairs felt "structured" 
+      //                   so I made a judgement call and used a POST request in order to 
+      //                   better structure the incoming data. 
+
+      $.ajax({
+        type: 'POST',
+        url: 'api/TriangleCalculator/GridCoordinatesFromCartesian',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        data: JSON.stringify({
+          "V1": {
+            "X": $('#v1x').val(),
+            "Y": $('#v1y').val()
+          },
+          "V2": {
+            "X": $('#v2x').val(),
+            "Y": $('#v2y').val()
+          },
+          "V3": {
+            "X": $('#v3x').val(),
+            "Y": $('#v3y').val()
+          }
+        }),
+        success: function (data) {
+          if (!data) {
+            alert('hmmm... no result was returned...');
+          } else {
+            $('#row').val(data.Row);
+            $('#col').val(data.Col);
+          }
+        },
+        error: AjaxErrorReport
+      });
+    }
+  </script>
+</head>
+<body>
+  <h2>Cherwell Triangle Coordinates</h2>
+  <div>
+    <div style="display: inline-block; margin: 20px;">
+      Row:<br />
+      <input type="text" id="row" onkeyup="ClearCoordinates();" class="gridValue" />
+    </div>
+    <div style="display: inline-block; margin: 20px;">
+      Column:<br />
+      <input type="text" id="col" onkeyup="ClearCoordinates();" class="gridValue" />
+    </div>
+    <br />
+    <div style="display: inline-block; margin: 0px 20px 20px 20px;">
+      <button onclick="CalculateCoordinates();">Calculate Coordinates</button>
+    </div>
+  </div>
+  <hr />
+  <div>
+    <div style="display: inline-block; margin: 20px;">
+      V1x:<br />
+      <input type="text" id="v1x" onkeyup="ClearGrid();" class="coordinateValue" />
+    </div>
+    <div style="display: inline-block; margin: 20px;">
+      V1y:<br />
+      <input type="text" id="v1y" onkeyup="ClearGrid();" class="coordinateValue" />
+    </div>
+    <br />
+    <div style="display: inline-block; margin: 20px;">
+      V2x:<br />
+      <input type="text" id="v2x" onkeyup="ClearGrid();" class="coordinateValue" />
+    </div>
+    <div style="display: inline-block; margin: 20px;">
+      V2y:<br />
+      <input type="text" id="v2y" onkeyup="ClearGrid();" class="coordinateValue" />
+    </div>
+    <br />
+    <div style="display: inline-block; margin: 20px;">
+      V3x:<br />
+      <input type="text" id="v3x" onkeyup="ClearGrid();" class="coordinateValue" />
+    </div>
+    <div style="display: inline-block; margin: 20px;">
+      V3y:<br />
+      <input type="text" id="v3y" onkeyup="ClearGrid();" class="coordinateValue" />
+    </div>
+    <br />
+    <div style="display: inline-block; margin: 0px 20px;">
+      <button onclick="CalculateGridLocation();">Calculate Grid Location</button>
+    </div>
+  </div>
+</body>
+</html>
