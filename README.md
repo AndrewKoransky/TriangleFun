@@ -6,4 +6,5 @@
    This probably should be a GET request in order to comply with REST 
    principles. The data coming in, with 3 X/Y pairs felt "structured" 
    so I made a judgment call and used a POST request in order to 
-   better structure the incoming data.
+   better structure the incoming data. In hindsight, probably not the
+   best approach. 
